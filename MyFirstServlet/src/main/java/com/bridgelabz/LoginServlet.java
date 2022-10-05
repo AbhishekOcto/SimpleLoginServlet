@@ -9,14 +9,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 
 @WebServlet(
 description = "Login Servlet Testing",
-        urlPatterns = {"/LoginServlet"},
-        initParams = {
-        @WebInitParam(name = "user", value = "Abhishek"),
-                @WebInitParam(name = "password", value = "Bridgelabz")
-        }
+        urlPatterns = {"/LoginServlet"}
+//        initParams = {
+//        @WebInitParam(name = "user", value = "Abhishek"),
+//                @WebInitParam(name = "password", value = "Bridgelabz")
+//        }
 )
 
 public class LoginServlet extends HttpServlet {
@@ -26,9 +27,9 @@ public class LoginServlet extends HttpServlet {
         String user = request.getParameter("user");
         String pwd = request.getParameter("pwd");
         //get servlet configuration init params
-        String userID = getServletConfig().getInitParameter("user");
-        String password = getServletConfig().getInitParameter("password");
-        if(userID.equals(user) && password.equals(pwd)) {
+//        String userID = getServletConfig().getInitParameter("user");
+//        String password = getServletConfig().getInitParameter("password");
+        if(isValidName(user) && isValidPassword(pwd)) {
             request.setAttribute("user", user);
             request.getRequestDispatcher("LoginSuccess.jsp").forward(request, response);
         }else{
@@ -36,7 +37,14 @@ public class LoginServlet extends HttpServlet {
             PrintWriter out = response.getWriter();
             out.println("<font color=red>Either user name or password is wrong.</font>");
             rd.include(request, response);
+            out.close();
 
         }
+    }
+    public boolean isValidName(String name){
+        return Pattern.compile("[A-Z][a-z]{2,}").matcher(name).matches();
+    }
+    public boolean isValidPassword(String password){
+        return Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=[^@#$%^&*+=]*[@#$%^&*+=][^@#$%^&*+=]*$).{8,}$").matcher(password).matches();
     }
 }
